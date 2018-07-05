@@ -1,0 +1,45 @@
+<?php
+//执行商品的增删改的操作
+//一、导入配置文件和函数库文件
+//二、连接mysql，选择数据库
+//3、获取action参数值，并做
+//二、接受添加的信息
+extract($_POST);
+$addtime=time();
+
+//上传图片
+$uploads_dir='./upload';
+//var_dump($_FILES);
+$tmp_name=@$_FILES['pic']['tmp_name'];
+@$filename=date("YmdHis").rand(1,1000).".jpg";
+move_uploaded_file($tmp_name,"$uploads_dir/$filename");
+
+//连接数据库
+ include "/include/conn.php";
+
+//获取action参数的值，并做对应的操作
+ 
+  
+  switch($_GET["action"]){
+  	case "add": //添加
+  	   $sql="insert into goods(name,typeid, price,pic,total,note,addtime) 
+       values('$name', '$typeid', '$price','$uploads_dir/$filename', '$total', '$note','$addtime')";
+       mysql_query($sql);
+       header("location:index.php");
+  	 break;
+  	 
+  	 case "del": //删除
+  	  $sql="delete from goods where id={$_GET['id']}";
+  	  mysql_query($sql);
+  	  //执行图片删除
+  	   if(mysql_affected_rows($link)>0){
+  	   	unlink("./upload/".$_GET['pic']);
+  	   }
+  	 //跳转页面
+  	 header("location:index.php");
+  	 break;
+  	 
+  	 case "update"; //修改
+  	 break;
+  }
+?>
